@@ -1,0 +1,54 @@
+package br.univille.biblioteca.controller;
+
+import br.univille.biblioteca.model.Livro;
+import br.univille.biblioteca.service.LivroService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+
+@Controller
+@RequestMapping("/livros")
+public class LivroController {
+
+    @Autowired
+    private LivroService service;
+
+    @GetMapping
+    public String listar(Model model) {
+        model.addAttribute("livros", service.listarTodos());
+        return "livro-list";
+    }
+
+    @GetMapping("/novo")
+    public String novoLivro(Model model) {
+        model.addAttribute("livro", new Livro());
+        return "livro-form";
+    }
+
+    @PostMapping("/salvar")
+    public String salvar(@ModelAttribute Livro livro) {
+        service.salvar(livro);
+        return "redirect:/livros";
+    }
+
+    @GetMapping("/editar/{id}")
+    public String editar(@PathVariable Long id, Model model) {
+        Livro livro = service.buscarPorId(id).orElse(new Livro());
+        model.addAttribute("livro", livro);
+        return "livro-form";
+    }
+
+    @GetMapping("/ver/{id}")
+    public String ver(@PathVariable Long id, Model model) {
+        Livro livro = service.buscarPorId(id).orElse(null);
+        model.addAttribute("livro", livro);
+        return "livro-view";
+    }
+
+    @GetMapping("/remover/{id}")
+    public String remover(@PathVariable Long id) {
+        service.remover(id);
+        return "redirect:/livros";
+    }
+}

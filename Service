@@ -1,0 +1,44 @@
+package br.univille.biblioteca.service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.stereotype.Service;
+
+import br.univille.biblioteca.model.Livro;
+
+@Service
+public class LivroService {
+
+    private List<Livro> lista = new ArrayList<>();
+    private long contador = 1;
+
+    public LivroService() {
+        lista.add(new Livro(contador++, "O Hobbit", "J.R.R. Tolkien", 1937, "Fantasia"));
+        lista.add(new Livro(contador++, "Dom Casmurro", "Machado de Assis", 1899, "Romance"));
+    }
+
+    public List<Livro> listarTodos() {
+        return lista;
+    }
+
+    public Livro salvar(Livro livro) {
+        if (livro.getId() == null) {
+            livro.setId(contador++);
+            lista.add(livro);
+        } else {
+            lista.removeIf(l -> l.getId().equals(livro.getId()));
+            lista.add(livro);
+        }
+        return livro;
+    }
+
+    public Optional<Livro> buscarPorId(Long id) {
+        return lista.stream().filter(l -> l.getId().equals(id)).findFirst();
+    }
+
+    public void remover(Long id) {
+        lista.removeIf(l -> l.getId().equals(id));
+    }
+}
